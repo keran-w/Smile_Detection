@@ -152,3 +152,4 @@ cython_debug/
 #.idea/
 app/SECRET_KEY.txt
 .DS_Store
+saved_models
