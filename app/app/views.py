@@ -9,8 +9,6 @@ from django.core.files.storage import FileSystemStorage
 
 from .settings import MEDIA_ROOT
 
-import pandas as pd
-
-def index(request, data_name=None):
+def index(request):
     context = {}
     return render(request, 'index.html', context)
