@@ -153,3 +153,5 @@ cython_debug/
 app/SECRET_KEY.txt
 .DS_Store
 saved_models
+test_images/test1.jpg
+inference/inference.ipynb
