@@ -20,12 +20,22 @@
     <div id="container">
         <video autoplay="true" id="videoElement", width="720" height="560">
         </video>
-        <div id="smile" style="position: absolute;">???</div>
+        <!-- <div id="smile" id="textElement" style="position: absolute;">???</div> -->
     </div>
+    <img id="imgElement">
+    <canvas id="canvasElement" style="position: absolute;"></canvas>
     <script>
     
-        const delay = 5000;
+        const delay = 1000;
+        const canvas_w = 64;
+        const canvas_l = 64;
         const video = document.querySelector("#videoElement");
+        const img = document.querySelector("#imgElement");
+        // const text = document.querySelector("#textElement");
+        const canvas = document.querySelector("#canvasElement");
+        canvas.width = canvas_w;
+        canvas.length = canvas_l;
+        var imageData = null;
         
         Promise.all([
             faceapi.nets.tinyFaceDetector.loadFromUri('../static/models'),
@@ -40,16 +50,29 @@
             console.log("Something went wrong!");
             });
         }
-
-        video.addEventListener('playing', () => {
-            const canvas = faceapi.createCanvasFromMedia(video)
+        
+        video.addEventListener('playing', () => {  
             const displaySize = { width: video.width, height: video.height }
-            faceapi.matchDimensions(canvas, displaySize)
             setInterval(async () => {
                 const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
                 const resizedDetections = faceapi.resizeResults(detections, displaySize)
-                console.log(resizedDetections._box);
-                // _height, _width, _x, _y
+                const box = resizedDetections._box
+                var ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas_w, canvas_l);
+                ctx.drawImage(video, box._x, box._y, box._width, box._height, 0, 0, canvas_w, canvas_l);
+                ctx.scale(-1, 1);
+                img.src = canvas.toDataURL();
+                imageData = ctx.getImageData(0, 0, canvas_w, canvas_l);                
+
+                for (i = 0; i < imageData.data.length; i += 4) {
+                    let count = imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2];
+                    let color = count / 3;
+                    imageData.data[i] = color;
+                    imageData.data[i + 1] = color;
+                    imageData.data[i + 2] = color;
+                    imageData.data[i + 3] = 255;
+                }
+                ctx.putImageData(imageData, 0, 0);
             }, delay)
         })
     </script>
