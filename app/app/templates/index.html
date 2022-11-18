@@ -59,7 +59,7 @@
                 const box = resizedDetections._box
                 var ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas_w, canvas_l);
-                ctx.drawImage(video, box._x, box._y, box._width, box._height, 0, 0, canvas_w, canvas_l);
+                ctx.drawImage(video, box._x, box._y - 50, box._width, box._height, 0, 0, canvas_w, canvas_l);
                 ctx.scale(-1, 1);
                 img.src = canvas.toDataURL();
                 imageData = ctx.getImageData(0, 0, canvas_w, canvas_l);                
