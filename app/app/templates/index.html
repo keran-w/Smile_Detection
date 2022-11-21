@@ -20,10 +20,10 @@
     <div id="container">
         <video autoplay="true" id="videoElement", width="720" height="560">
         </video>
-        <!-- <div id="smile" id="textElement" style="position: absolute;">???</div> -->
+        <div id="textElement" style="position: absolute;">Loading ...</div>
     </div>
     <img id="imgElement">
-    <canvas id="canvasElement" style="position: absolute;"></canvas>
+    <canvas id="canvasElement" style="position: absolute;" ></canvas>
     <script>
     
         const delay = 1000;
@@ -31,7 +31,7 @@
         const canvas_l = 64;
         const video = document.querySelector("#videoElement");
         const img = document.querySelector("#imgElement");
-        // const text = document.querySelector("#textElement");
+        const display = document.querySelector("#textElement");
         const canvas = document.querySelector("#canvasElement");
         canvas.width = canvas_w;
         canvas.length = canvas_l;
@@ -57,13 +57,13 @@
                 const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
                 const resizedDetections = faceapi.resizeResults(detections, displaySize)
                 const box = resizedDetections._box
-                var ctx = canvas.getContext('2d');
+                var ctx = canvas.getContext('2d', {willReadFrequently: true});
                 ctx.clearRect(0, 0, canvas_w, canvas_l);
-                ctx.drawImage(video, box._x, box._y, box._width, box._height, 0, 0, canvas_w, canvas_l);
+                ctx.drawImage(video, box._x, box._y - 50, box._width, box._height, 0, 0, canvas_w, canvas_l);
                 ctx.scale(-1, 1);
                 img.src = canvas.toDataURL();
                 imageData = ctx.getImageData(0, 0, canvas_w, canvas_l);                
-
+                var toSend = [];
                 for (i = 0; i < imageData.data.length; i += 4) {
                     let count = imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2];
                     let color = count / 3;
@@ -71,8 +71,23 @@
                     imageData.data[i + 1] = color;
                     imageData.data[i + 2] = color;
                     imageData.data[i + 3] = 255;
+                    toSend = toSend.concat(color);
                 }
                 ctx.putImageData(imageData, 0, 0);
+                
+
+                $.ajax({
+                    type: 'POST', 
+                    data: {'data': toSend},
+                    url: "{% url 'detect' %}",
+                    success: function(response) {
+                        document.getElementById("textElement").innerHTML = response.result;
+                    },
+                    error: function(response){
+                        alert("Error!");
+                        console.log(response);
+                    }
+                })
             }, delay)
         })
     </script>
