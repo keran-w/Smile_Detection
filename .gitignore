@@ -155,3 +155,4 @@ app/SECRET_KEY.txt
 saved_models
 test_images/test1.jpg
 inference/inference.ipynb
+inference/test.ipynb
