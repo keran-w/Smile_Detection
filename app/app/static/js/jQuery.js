@@ -10879,9 +10879,3 @@ if ( typeof noGlobal === "undefined" ) {
 
 return jQuery;
 } );
-
-const group = await getGroupInternal(groupID);
-let isAdmin = isGroupAdminByGroup(group, userID);
-if (!isAdmin) {
-	return httpCodes.Forbidden();
-}
