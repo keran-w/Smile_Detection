@@ -66,7 +66,7 @@
                 var toSend = [];
                 for (i = 0; i < imageData.data.length; i += 4) {
                     let count = imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2];
-                    let color = count / 3;
+                    let color = Math.round(count / 3);
                     imageData.data[i] = color;
                     imageData.data[i + 1] = color;
                     imageData.data[i + 2] = color;
@@ -81,7 +81,8 @@
                     data: {'data': toSend},
                     url: "{% url 'detect' %}",
                     success: function(response) {
-                        document.getElementById("textElement").innerHTML = response.result;
+                        if(response.result != "Waiting")
+                            document.getElementById("textElement").innerHTML = response.result + " probability: " + response.prob;
                     },
                     error: function(response){
                         alert("Error!");
